@@ -4,3 +4,4 @@ psycopg[binary]>=3.3,<4.0
 whitenoise>=6.12,<7.0
 gunicorn>=26.1,<27.0
 requests>=2.34,<3.0
+anthropic>=1.0,<2.0

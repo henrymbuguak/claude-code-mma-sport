@@ -33,6 +33,42 @@ upcoming events/matches.
   favorites as "notifications done" — it's a personal follow list only,
   no reminders are sent.
 
+## Post-MVP features
+
+- Search/filter for the upcoming events list (search by event/fighter
+  name, filter by weight class, filter by date range) —
+  **implemented**, see `events.forms.EventFilterForm` and
+  `events.views.UpcomingEventListView`. This was **not** part of the
+  original MVP scope above — it's a query-layer enhancement added
+  afterward on top of the existing public upcoming-events list. Fully
+  anonymous, no login required, consistent with the rest of event
+  browsing.
+- AI-Powered Match Intelligence — a short, neutral written analysis per
+  upcoming bout, generated via a real Claude agentic tool-use loop
+  (`client.beta.messages.tool_runner`) that looks up each fighter's
+  cached record and current UFC ranking before writing. **Implemented**,
+  see the `intelligence` app and `events.models.Ranking`
+  (`/ufc/rankings`, synced via `events.management.commands.sync_rankings`
+  — the project's first use of that previously-unused endpoint).
+  - **Framing, deliberately**: neutral commentary only — no odds, no win
+    percentages, no declared winner. `MatchAnalysis` has no "predicted
+    winner"/"confidence" field at all, so the schema itself can't drift
+    toward betting-style content. Every generated analysis carries an
+    on-page disclaimer.
+  - **Only `generate_match_intelligence` needs `ANTHROPIC_API_KEY`** —
+    unlike `CITO_API_KEY`, it's never read at Django startup, only lazily
+    inside `intelligence/services/claude_analyst.py`. Browsing, tests, and
+    `runserver` all work fine with zero Anthropic key configured.
+  - Cost-controlled via `INTELLIGENCE_WINDOW_DAYS` (near-term bouts only)
+    and `INTELLIGENCE_MAX_ANALYSES_PER_RUN` (hard cap per run) — see
+    docs/data.md for the real per-analysis cost estimate.
+  - `sync_rankings` makes exactly **one** API call per run — the
+    `/ufc/rankings` endpoint doesn't actually support `page`-based
+    pagination (confirmed live: `page=1` and `page=2` return identical
+    data), only `limit`, so a single generous-limit call gets every
+    division. Don't reintroduce a pagination loop for it without
+    re-confirming that's changed upstream.
+
 ## User accounts
 
 - **Implemented** — see the `accounts` app (signup/login/logout only).

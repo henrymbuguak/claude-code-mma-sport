@@ -4,7 +4,7 @@ import pytest
 from django.db import IntegrityError
 from django.utils import timezone
 
-from events.models import Bout
+from events.models import Bout, Ranking
 
 pytestmark = pytest.mark.django_db
 
@@ -35,3 +35,11 @@ def test_bout_ordering_by_bout_order(make_event, make_bout):
     first = make_bout(event, cito_id="b-1", bout_order=1)
 
     assert list(Bout.objects.filter(event=event)) == [first, second]
+
+
+def test_ranking_unique_per_fighter_and_division(make_fighter):
+    fighter = make_fighter()
+    Ranking.objects.create(fighter=fighter, division="Lightweight", rank=1)
+
+    with pytest.raises(IntegrityError):
+        Ranking.objects.create(fighter=fighter, division="Lightweight", rank=2)

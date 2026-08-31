@@ -30,3 +30,9 @@ class CitoClient:
 
     def get_event_bouts(self, event_id_or_slug):
         return self._get(f"/ufc/events/{event_id_or_slug}/bouts")
+
+    def get_rankings(self, limit=250):
+        # This endpoint does not honor `page` in practice (confirmed via a
+        # live call — page=1 and page=2 return identical data); only `limit`
+        # controls response size. See events/management/commands/sync_rankings.py.
+        return self._get("/ufc/rankings", {"limit": limit})

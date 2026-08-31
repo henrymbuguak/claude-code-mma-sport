@@ -83,6 +83,130 @@ def test_upcoming_list_links_to_event_detail(client, make_event):
     assert f'href="{detail_url}"' in response.content.decode()
 
 
+def test_filter_by_weight_class(client, make_event, make_bout):
+    matching_event = make_event(cito_id="e-match", name="UFC 900")
+    make_bout(matching_event, cito_id="b-match", weight_class="Lightweight")
+    other_event = make_event(
+        cito_id="e-other", name="UFC 901", start_time=timezone.now() + timedelta(days=2)
+    )
+    make_bout(other_event, cito_id="b-other", weight_class="Heavyweight")
+
+    response = client.get(reverse("events:upcoming_list"), {"weight_class": "Lightweight"})
+
+    assert list(response.context["events"]) == [matching_event]
+
+
+def test_filter_by_date_range(client, make_event):
+    in_range = make_event(cito_id="e-in", start_time=timezone.now() + timedelta(days=5))
+    make_event(cito_id="e-out", start_time=timezone.now() + timedelta(days=30))
+
+    response = client.get(
+        reverse("events:upcoming_list"),
+        {
+            "date_from": (timezone.now() + timedelta(days=1)).date().isoformat(),
+            "date_to": (timezone.now() + timedelta(days=10)).date().isoformat(),
+        },
+    )
+
+    assert list(response.context["events"]) == [in_range]
+
+
+def test_search_by_event_name(client, make_event):
+    matching = make_event(cito_id="e-match", name="UFC 999: Fight Night")
+    make_event(
+        cito_id="e-other", name="UFC 1000: Other", start_time=timezone.now() + timedelta(days=3)
+    )
+
+    response = client.get(reverse("events:upcoming_list"), {"q": "Fight Night"})
+
+    assert list(response.context["events"]) == [matching]
+
+
+def test_search_by_fighter_name_either_side(client, make_event, make_bout, make_fighter):
+    event = make_event()
+    make_bout(
+        event,
+        fighter_one=make_fighter(cito_id="f-jones", name="Jon Jones"),
+        fighter_two=make_fighter(cito_id="f-gane", name="Ciryl Gane"),
+    )
+    other_event = make_event(cito_id="e-other", start_time=timezone.now() + timedelta(days=3))
+    make_bout(other_event, cito_id="b-other")
+
+    response = client.get(reverse("events:upcoming_list"), {"q": "Jones"})
+    assert list(response.context["events"]) == [event]
+
+    response = client.get(reverse("events:upcoming_list"), {"q": "Gane"})
+    assert list(response.context["events"]) == [event]
+
+
+def test_combining_multiple_filters(client, make_event, make_bout):
+    event = make_event(cito_id="e-1", name="UFC 950")
+    make_bout(event, cito_id="b-1", weight_class="Welterweight")
+    other = make_event(cito_id="e-2", name="UFC 950 B", start_time=event.start_time)
+    make_bout(other, cito_id="b-2", weight_class="Featherweight")
+
+    response = client.get(
+        reverse("events:upcoming_list"), {"q": "UFC 950", "weight_class": "Welterweight"}
+    )
+
+    assert list(response.context["events"]) == [event]
+
+
+def test_no_duplicate_events_when_multiple_bouts_match_filter(
+    client, make_event, make_bout, make_fighter
+):
+    event = make_event(name="UFC 999")
+    make_bout(
+        event,
+        cito_id="b-1",
+        weight_class="Lightweight",
+        fighter_one=make_fighter(cito_id="f-1", name="Jon Jones"),
+    )
+    make_bout(
+        event,
+        cito_id="b-2",
+        weight_class="Lightweight",
+        fighter_one=make_fighter(cito_id="f-2", name="Jon Smith"),
+    )
+
+    response = client.get(reverse("events:upcoming_list"), {"weight_class": "Lightweight"})
+
+    events = list(response.context["events"])
+    assert events == [event]
+    assert len(events) == 1
+
+
+def test_empty_state_message_when_filters_active_and_no_match(client):
+    response = client.get(reverse("events:upcoming_list"), {"q": "no such event"})
+    content = response.content.decode()
+
+    assert "No events match your filters" in content
+    assert "No upcoming events scheduled" not in content
+
+
+def test_unfiltered_request_matches_pre_feature_behavior(client, make_event):
+    later = make_event(cito_id="e-later", start_time=timezone.now() + timedelta(days=30))
+    sooner = make_event(cito_id="e-sooner", start_time=timezone.now() + timedelta(days=1))
+
+    response = client.get(reverse("events:upcoming_list"))
+
+    assert list(response.context["events"]) == [sooner, later]
+    assert response.context["filters_active"] is False
+
+
+def test_invalid_date_filter_ignored_other_filters_still_apply(client, make_event, make_bout):
+    event = make_event(name="UFC 950")
+    make_bout(event, weight_class="Lightweight")
+
+    response = client.get(
+        reverse("events:upcoming_list"),
+        {"date_from": "not-a-date", "weight_class": "Lightweight"},
+    )
+
+    assert response.status_code == 200
+    assert list(response.context["events"]) == [event]
+
+
 def test_event_detail_shows_full_card_grouped_by_segment(
     client, make_event, make_bout, make_fighter
 ):
@@ -161,6 +285,30 @@ def test_event_detail_viewable_for_completed_event_with_status_badge(client, mak
 
     assert response.status_code == 200
     assert "Completed" in response.content.decode()
+
+
+def test_event_detail_shows_match_analysis_when_present(
+    client, make_event, make_bout, make_match_analysis
+):
+    event = make_event()
+    bout = make_bout(event)
+    make_match_analysis(bout, analysis_text="A neutral breakdown of the matchup.")
+
+    response = client.get(reverse("events:event_detail", args=[event.slug]))
+    content = response.content.decode()
+
+    assert "AI Match Analysis" in content
+    assert "A neutral breakdown of the matchup." in content
+    assert "not betting advice" in content
+
+
+def test_event_detail_omits_match_analysis_when_absent(client, make_event, make_bout):
+    event = make_event()
+    make_bout(event)
+
+    response = client.get(reverse("events:event_detail", args=[event.slug]))
+
+    assert "AI Match Analysis" not in response.content.decode()
 
 
 def test_fighter_profile_shows_info(client, make_fighter):

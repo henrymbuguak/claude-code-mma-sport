@@ -58,6 +58,15 @@
           {% if bout.weight_class %}<span class="weight-class">{{ bout.weight_class }}</span>{% endif %}
           {% if bout.is_main_event %}<span class="badge">Main event</span>{% endif %}
           {% if bout.is_title_fight %}<span class="badge">Title fight</span>{% endif %}
+          {% if bout.match_analysis %}
+          <div class="match-intelligence">
+            <h4 class="match-intelligence-heading">AI Match Analysis</h4>
+            <p>{{ bout.match_analysis.analysis_text|linebreaksbr }}</p>
+            <p class="match-intelligence-disclaimer">
+              AI-generated commentary for context only — not betting advice, odds, or a predicted outcome.
+            </p>
+          </div>
+          {% endif %}
         </li>
         {% endfor %}
       </ul>

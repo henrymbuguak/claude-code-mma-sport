@@ -12,4 +12,4 @@ select = ["E", "F", "I"]
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "mma_sport.settings"
 python_files = ["test_*.py"]
-testpaths = ["events", "accounts", "favorites"]
+testpaths = ["events", "accounts", "favorites", "intelligence"]

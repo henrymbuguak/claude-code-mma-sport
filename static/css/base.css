@@ -268,6 +268,53 @@ main {
   font-size: 0.875rem;
 }
 
+.form select {
+  background: var(--color-surface);
+  border: 1px solid var(--color-text-secondary);
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+
+.filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.filter-form p {
+  margin: 0;
+  flex: 1 1 160px;
+}
+
+.match-intelligence {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: var(--color-background);
+  border: 1px solid var(--color-text-secondary);
+  border-radius: 0.25rem;
+  width: 100%;
+}
+
+.match-intelligence-heading {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.875rem;
+  color: var(--color-accent-secondary);
+  margin: 0 0 0.5rem;
+}
+
+.match-intelligence-disclaimer {
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-style: italic;
+  margin: 0.5rem 0 0;
+}
+
 .button {
   display: inline-block;
   background: var(--color-accent);

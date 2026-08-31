@@ -1,12 +1,19 @@
 from django.contrib import admin
 
-from events.models import Bout, Event, Fighter
+from events.models import Bout, Event, Fighter, Ranking
 
 
 @admin.register(Fighter)
 class FighterAdmin(admin.ModelAdmin):
     list_display = ("name", "nickname", "record", "country", "updated_at")
     search_fields = ("name", "nickname", "slug")
+
+
+@admin.register(Ranking)
+class RankingAdmin(admin.ModelAdmin):
+    list_display = ("fighter", "division", "rank", "rank_text", "is_champion", "updated_at")
+    list_filter = ("division", "is_champion")
+    search_fields = ("fighter__name", "division")
 
 
 @admin.register(Event)

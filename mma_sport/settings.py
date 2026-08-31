@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "events",
     "accounts",
     "favorites",
+    "intelligence",
 ]
 
 MIDDLEWARE = [
@@ -153,6 +154,22 @@ CITO_API_BASE_URL = env("CITO_API_BASE_URL", default="https://api.citoapi.com/ap
 CITO_API_KEY = env("MMAAPI_API_KEY")
 CITO_SYNC_BOUTS_REFRESH_WINDOW_DAYS = env.int("CITO_SYNC_BOUTS_REFRESH_WINDOW_DAYS", default=14)
 CITO_SYNC_MAX_API_CALLS_PER_RUN = env.int("CITO_SYNC_MAX_API_CALLS_PER_RUN", default=40)
+CITO_RANKINGS_SYNC_MAX_API_CALLS_PER_RUN = env.int(
+    "CITO_RANKINGS_SYNC_MAX_API_CALLS_PER_RUN", default=5
+)
+
+
+# AI Match Intelligence (Anthropic/Claude) — see docs/data.md and CLAUDE.md.
+# NOTE: unlike CITO_API_KEY above, ANTHROPIC_API_KEY is deliberately NOT read
+# here. The anthropic SDK resolves it from the environment itself the first
+# time intelligence/services/claude_analyst.py constructs a client, which
+# only happens inside the generate_match_intelligence command. This keeps
+# runserver/tests/browsing working with no Anthropic key configured at all —
+# only running that command requires it.
+
+INTELLIGENCE_MODEL = env("INTELLIGENCE_MODEL", default="claude-opus-5")
+INTELLIGENCE_WINDOW_DAYS = env.int("INTELLIGENCE_WINDOW_DAYS", default=7)
+INTELLIGENCE_MAX_ANALYSES_PER_RUN = env.int("INTELLIGENCE_MAX_ANALYSES_PER_RUN", default=10)
 
 
 # Auth

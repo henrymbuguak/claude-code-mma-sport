@@ -4,12 +4,24 @@
 
 {% block content %}
 <h2 class="visually-hidden">Upcoming events</h2>
+<form class="form filter-form" method="get" novalidate>
+  {{ filter_form.as_p }}
+  <button type="submit" class="button">Filter</button>
+  {% if filters_active %}
+    <a class="button button--link" href="{% url 'events:upcoming_list' %}">Clear filters</a>
+  {% endif %}
+</form>
 {% if events %}
 <div class="event-list">
   {% for event in events %}
     {% include "events/_event_card.html" %}
   {% endfor %}
 </div>
+{% elif filters_active %}
+<p class="empty-state">
+  No events match your filters.
+  <a href="{% url 'events:upcoming_list' %}">Clear filters</a>
+</p>
 {% else %}
 <p class="empty-state">No upcoming events scheduled — check back soon.</p>
 {% endif %}

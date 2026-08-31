@@ -3,7 +3,8 @@ from datetime import timedelta
 import pytest
 from django.utils import timezone
 
-from events.models import Bout, Event, Fighter
+from events.models import Bout, Event, Fighter, Ranking
+from intelligence.models import MatchAnalysis
 
 
 @pytest.fixture
@@ -47,6 +48,24 @@ def make_bout(make_fighter):
             fighter_one=fighter_one,
             fighter_two=fighter_two,
             **kwargs,
+        )
+
+    return _make
+
+
+@pytest.fixture
+def make_ranking():
+    def _make(fighter, division="Lightweight", **kwargs):
+        return Ranking.objects.create(fighter=fighter, division=division, **kwargs)
+
+    return _make
+
+
+@pytest.fixture
+def make_match_analysis():
+    def _make(bout, analysis_text="Both fighters bring solid records into this matchup.", **kwargs):
+        return MatchAnalysis.objects.create(
+            bout=bout, analysis_text=analysis_text, model_used="claude-opus-5", **kwargs
         )
 
     return _make

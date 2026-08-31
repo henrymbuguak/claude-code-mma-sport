@@ -18,6 +18,27 @@ class Fighter(models.Model):
         return self.name
 
 
+class Ranking(models.Model):
+    fighter = models.ForeignKey(Fighter, on_delete=models.CASCADE, related_name="rankings")
+    division = models.CharField(max_length=100)
+    rank = models.PositiveSmallIntegerField(null=True, blank=True)
+    rank_text = models.CharField(max_length=16, blank=True)
+    is_champion = models.BooleanField(default=False)
+    raw_data = models.JSONField(blank=True, default=dict)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["fighter", "division"], name="unique_ranking_per_fighter_division"
+            )
+        ]
+        ordering = ["division", "rank"]
+
+    def __str__(self):
+        return f"{self.fighter} — {self.division} ({self.rank_text or self.rank})"
+
+
 class Event(models.Model):
     class Status(models.TextChoices):
         UPCOMING = "upcoming", "Upcoming"
