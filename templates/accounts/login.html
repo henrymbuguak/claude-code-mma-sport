@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Log In — MMA Sport{% endblock %}
+
+{% block content %}
+<h2>Log In</h2>
+<form class="form" method="post" novalidate>
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="hidden" name="next" value="{{ next }}">
+  <button type="submit" class="button">Log In</button>
+</form>
+<p>Need an account? <a href="{% url 'accounts:signup' %}">Sign up</a></p>
+{% endblock %}

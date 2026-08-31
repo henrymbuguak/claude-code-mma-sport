@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}{{ fighter.name }} — MMA Sport{% endblock %}
+
+{% block content %}
+<p><a class="back-link" href="{% url 'events:upcoming_list' %}">&larr; Back to upcoming events</a></p>
+
+<article class="event-card fighter-profile" aria-labelledby="fighter-name">
+  {% if fighter.photo_url %}
+  <img class="fighter-photo" src="{{ fighter.photo_url }}" alt="{{ fighter.name }}">
+  {% endif %}
+
+  <h2 id="fighter-name">{{ fighter.name }}</h2>
+  {% if fighter.nickname %}<p class="fighter-nickname">"{{ fighter.nickname }}"</p>{% endif %}
+
+  {% if fighter.record or fighter.country %}
+  <p class="fighter-meta">
+    {% if fighter.record %}<span class="fighter-record">{{ fighter.record }}</span>{% endif %}
+    {% if fighter.record and fighter.country %} &middot; {% endif %}
+    {% if fighter.country %}<span>{{ fighter.country }}</span>{% endif %}
+  </p>
+  {% endif %}
+
+  <section class="bout-group" aria-labelledby="upcoming-bouts-heading">
+    <h3 id="upcoming-bouts-heading" class="bout-group-heading">Upcoming Bouts</h3>
+    {% if upcoming_bouts %}
+    <ul class="bout-list" aria-label="Upcoming bouts">
+      {% for bout in upcoming_bouts %}
+      <li>
+        <span class="matchup">
+          vs <a href="{% url 'events:fighter_detail' bout.opponent.slug %}">{{ bout.opponent.name }}</a>
+        </span>
+        <span class="bout-event">
+          <a href="{% url 'events:event_detail' bout.event.slug %}">{{ bout.event.name }}</a>
+          <time datetime="{{ bout.event.start_time.isoformat }}" data-utc="{{ bout.event.start_time.isoformat }}">
+            {{ bout.event.start_time|date:"D, N j, Y \a\t H:i" }} UTC
+          </time>
+        </span>
+        {% if bout.weight_class %}<span class="weight-class">{{ bout.weight_class }}</span>{% endif %}
+        {% if bout.is_main_event %}<span class="badge">Main event</span>{% endif %}
+        {% if bout.is_title_fight %}<span class="badge">Title fight</span>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-state">No upcoming bouts scheduled — check back soon.</p>
+    {% endif %}
+  </section>
+</article>
+{% endblock %}

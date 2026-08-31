@@ -1,0 +1,28 @@
+<article class="event-card" aria-labelledby="event-{{ event.pk }}-name">
+  <h2 id="event-{{ event.pk }}-name"><a href="{% url 'events:event_detail' event.slug %}">{{ event.name }}</a></h2>
+  <p class="event-time">
+    <time datetime="{{ event.start_time.isoformat }}" data-utc="{{ event.start_time.isoformat }}">
+      {{ event.start_time|date:"D, N j, Y \a\t H:i" }} UTC
+    </time>
+  </p>
+  {% if event.venue_name or event.venue_city %}
+  <p class="event-venue">
+    {{ event.venue_name }}{% if event.venue_name and event.venue_city %}, {% endif %}{{ event.venue_city }}
+  </p>
+  {% endif %}
+  {% if event.main_card_bouts %}
+  <ul class="bout-list" aria-label="Main card">
+    {% for bout in event.main_card_bouts %}
+    <li>
+      <span class="matchup">
+        <a href="{% url 'events:fighter_detail' bout.fighter_one.slug %}">{{ bout.fighter_one.name }}</a>
+        vs
+        <a href="{% url 'events:fighter_detail' bout.fighter_two.slug %}">{{ bout.fighter_two.name }}</a>
+      </span>
+      {% if bout.weight_class %}<span class="weight-class">{{ bout.weight_class }}</span>{% endif %}
+      {% if bout.is_title_fight %}<span class="badge">Title fight</span>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</article>

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Upcoming Events — MMA Sport{% endblock %}
+
+{% block content %}
+<h2 class="visually-hidden">Upcoming events</h2>
+{% if events %}
+<div class="event-list">
+  {% for event in events %}
+    {% include "events/_event_card.html" %}
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty-state">No upcoming events scheduled — check back soon.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}My Events — MMA Sport{% endblock %}
+
+{% block content %}
+<h2>My Events</h2>
+
+{% if events %}
+<ul class="event-list">
+  {% for event in events %}
+  <li class="event-card my-events-row">
+    <div>
+      <h3><a href="{% url 'events:event_detail' event.slug %}">{{ event.name }}</a></h3>
+      <p class="event-time">
+        <time datetime="{{ event.start_time.isoformat }}" data-utc="{{ event.start_time.isoformat }}">
+          {{ event.start_time|date:"D, N j, Y \a\t H:i" }} UTC
+        </time>
+      </p>
+      {% if event.venue_name or event.venue_city %}
+      <p class="event-venue">{{ event.venue_name }}{% if event.venue_name and event.venue_city %}, {% endif %}{{ event.venue_city }}</p>
+      {% endif %}
+    </div>
+    <form method="post" action="{% url 'favorites:follow_toggle' event.slug %}">
+      {% csrf_token %}
+      <button type="submit" class="button button--secondary">Unfollow</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="empty-state">
+  You're not following any upcoming events yet.
+  <a href="{% url 'events:upcoming_list' %}">Browse upcoming events</a>.
+</p>
+{% endif %}
+{% endblock %}

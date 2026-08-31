@@ -1,0 +1,310 @@
+:root {
+  --color-background: #0b0b0d;
+  --color-surface: #18181b;
+  --color-accent: #e31c3d;
+  --color-accent-secondary: #f2b705;
+  --color-text: #f5f5f5;
+  --color-text-secondary: #a1a1aa;
+  --color-success: #22c55e;
+  --color-live: #ef4444;
+  --font-heading: "Oswald", "Arial Narrow", sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--color-accent);
+  color: var(--color-text);
+  padding: 0.75rem 1rem;
+  z-index: 10;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+a,
+button {
+  color: var(--color-accent);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent-secondary);
+  outline-offset: 2px;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--color-surface);
+}
+
+.site-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+main {
+  padding: 1rem;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.event-card {
+  background: var(--color-surface);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.event-card h2 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
+}
+
+.event-time {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+  margin: 0 0 0.25rem;
+}
+
+.event-venue {
+  color: var(--color-text-secondary);
+  margin: 0 0 0.75rem;
+}
+
+.bout-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bout-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.weight-class {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.badge {
+  background: var(--color-accent);
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.empty-state {
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.event-poster {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.bout-group {
+  margin-top: 1.5rem;
+}
+
+.bout-group-heading {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 0.5rem;
+}
+
+.fighter-record {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.status-badge {
+  display: inline-block;
+  background: var(--color-text-secondary);
+  color: var(--color-background);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  margin: 0 0 0.75rem;
+}
+
+.status-badge--live {
+  background: var(--color-live);
+  color: var(--color-text);
+}
+
+.fighter-photo {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  border-radius: 0.5rem;
+  margin: 0 auto 1rem;
+}
+
+.fighter-nickname {
+  color: var(--color-text-secondary);
+  font-style: italic;
+  margin: 0 0 0.5rem;
+}
+
+.fighter-meta {
+  color: var(--color-text-secondary);
+  margin: 0 0 0.75rem;
+}
+
+.bout-event {
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.account-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.875rem;
+}
+
+.account-nav-username {
+  color: var(--color-text-secondary);
+}
+
+.logout-form {
+  margin: 0;
+  display: inline;
+}
+
+.form p {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0 0 1rem;
+}
+
+.form label {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.form input {
+  background: var(--color-surface);
+  border: 1px solid var(--color-text-secondary);
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+
+.form .errorlist {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  color: var(--color-live);
+  font-size: 0.875rem;
+}
+
+.button {
+  display: inline-block;
+  background: var(--color-accent);
+  color: var(--color-text);
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button--link {
+  background: none;
+  padding: 0;
+  color: var(--color-accent);
+  font-weight: 400;
+  text-decoration: underline;
+}
+
+.button--secondary {
+  background: none;
+  color: var(--color-success);
+  border: 1px solid var(--color-success);
+}
+
+.my-events-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  main {
+    max-width: 800px;
+    padding: 2rem 1rem;
+  }
+}

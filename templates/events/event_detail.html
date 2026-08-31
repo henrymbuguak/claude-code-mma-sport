@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.name }} — MMA Sport{% endblock %}
+
+{% block content %}
+<p><a class="back-link" href="{% url 'events:upcoming_list' %}">&larr; Back to upcoming events</a></p>
+
+<article class="event-card event-detail" aria-labelledby="event-name">
+  {% if event.poster_image_url %}
+  <img class="event-poster" src="{{ event.poster_image_url }}" alt="{{ event.name }} poster">
+  {% endif %}
+
+  <h2 id="event-name">{{ event.name }}</h2>
+
+  {% if event.status != "upcoming" %}
+  <p class="status-badge status-badge--{{ event.status }}">{{ event.get_status_display }}</p>
+  {% endif %}
+
+  <p class="event-time">
+    <time datetime="{{ event.start_time.isoformat }}" data-utc="{{ event.start_time.isoformat }}">
+      {{ event.start_time|date:"D, N j, Y \a\t H:i" }} UTC
+    </time>
+  </p>
+
+  {% if event.venue_name or event.venue_city or event.venue_country %}
+  <p class="event-venue">
+    {{ event.venue_name }}{% if event.venue_name and event.venue_city %}, {% endif %}{{ event.venue_city }}{% if event.venue_country and event.venue_city %}, {% endif %}{{ event.venue_country }}
+  </p>
+  {% endif %}
+
+  <p class="follow-control">
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'favorites:follow_toggle' event.slug %}">
+      {% csrf_token %}
+      {% if is_following %}
+      <button type="submit" class="button button--secondary">Unfollow</button>
+      {% else %}
+      <button type="submit" class="button">Follow</button>
+      {% endif %}
+    </form>
+    {% else %}
+    <a href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}">Log in to follow this event</a>
+    {% endif %}
+  </p>
+
+  {% if bout_groups %}
+    {% for label, bouts in bout_groups %}
+    <section class="bout-group" aria-labelledby="segment-{{ forloop.counter }}">
+      <h3 id="segment-{{ forloop.counter }}" class="bout-group-heading">{{ label }}</h3>
+      <ul class="bout-list" aria-label="{{ label }}">
+        {% for bout in bouts %}
+        <li>
+          <span class="matchup">
+            <a href="{% url 'events:fighter_detail' bout.fighter_one.slug %}">{{ bout.fighter_one.name }}</a>{% if bout.fighter_one.record %} <span class="fighter-record">({{ bout.fighter_one.record }})</span>{% endif %}
+            vs
+            <a href="{% url 'events:fighter_detail' bout.fighter_two.slug %}">{{ bout.fighter_two.name }}</a>{% if bout.fighter_two.record %} <span class="fighter-record">({{ bout.fighter_two.record }})</span>{% endif %}
+          </span>
+          {% if bout.weight_class %}<span class="weight-class">{{ bout.weight_class }}</span>{% endif %}
+          {% if bout.is_main_event %}<span class="badge">Main event</span>{% endif %}
+          {% if bout.is_title_fight %}<span class="badge">Title fight</span>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endfor %}
+  {% else %}
+  <p class="empty-state">Fight card not yet announced — check back soon.</p>
+  {% endif %}
+</article>
+{% endblock %}
