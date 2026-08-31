@@ -144,6 +144,10 @@ conftest.py     Shared pytest fixtures used across all apps' test suites
 - [`docs/dev-practices.md`](docs/dev-practices.md): commands, testing
   conventions, app-by-app layout
 
+## License
+
+[MIT](LICENSE)
+
 ---
 
 ## Built with Claude Code
